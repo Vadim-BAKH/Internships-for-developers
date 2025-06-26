@@ -18,6 +18,7 @@ target_metadata = Base.metadata
 logger.debug(str(settings.db.url))
 config.set_main_option("sqlalchemy.url", str(settings.db.url))
 
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -30,6 +31,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
+
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
