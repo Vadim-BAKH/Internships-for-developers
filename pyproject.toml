@@ -37,3 +37,10 @@ nano = "^0.10.0"
 
 [tool.black]
 line-length = 79
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = """
+    W0613,
+    R0903,
+    E0213
+"""
