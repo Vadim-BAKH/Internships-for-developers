@@ -1,0 +1,24 @@
+FROM python:3.12.3-bookworm
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y libpq-dev gcc curl && rm -rf /var/lib/apt/lists/*
+RUN pip install --upgrade pip
+ENV PATH="/root/.local/bin:$PATH"
+
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    poetry config virtualenvs.create false && \
+    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
+
+COPY pyproject.toml poetry.lock README.md ./
+
+RUN poetry install --no-interaction --no-ansi --no-root
+
+COPY fastapi_app/ /app/fastapi_app
+
+EXPOSE 8000
+
+ENV PYTHONPATH=/app
