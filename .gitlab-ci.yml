@@ -38,6 +38,8 @@ lint:
   stage: lint
   tags:
     - saas-postgres-production
+    - sld-postgres-production
+    - spp
   script:
     - poetry run flake8 .
     - poetry run ruff check .
@@ -47,6 +49,8 @@ test:
   stage: test
   tags:
     - saas-postgres-production
+    - sld-postgres-production
+    - spp
   variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_TLS_CERTDIR: ""
@@ -60,6 +64,8 @@ build:
   stage: build
   tags:
     - saas-postgres-production
+    - sld-postgres-production
+    - spp
   variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_TLS_CERTDIR: ""
