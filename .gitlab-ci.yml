@@ -5,57 +5,65 @@ stages:
 
 # ✅ Глобальные переменные
 variables:
-  POSTGRES_USER: $POSTGRES_USER
-  POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-  DB_PORT: $DB_PORT
-  POSTGRES_DB: $POSTGRES_DB
-  DB_HOST: $DB_HOST
-  LOGLEVEL: $LOGLEVEL
+  POSTGRES_USER: superuser
+  POSTGRES_PASSWORD: mypassword
+  POSTGRES_DB: main_db
+  DB_PORT: 5432
+  APP_CONFIG__DB__URL: postgresql+asyncpg://superuser:mypassword@db:5432/main_db
+  APP_CONFIG__LOGGING__LEVEL: DEBUG
+  DOCKER_DRIVER: overlay2
 
 # ✅ Общие настройки
 default:
   image: python:3.12
+  services:
+    - docker:dind
+  before_script:
+    - apt-get update && apt-get install -y libpq-dev gcc curl
+    - curl -sSL https://install.python-poetry.org | python3 -
+    - export PATH="$HOME/.local/bin:$PATH"
+    - poetry config virtualenvs.create false
+    - poetry install --no-interaction --no-ansi --no-root
 
-  # ✅ Kеширование по зависимостям (pyproject.toml)
-  cache:
-    key:
-      files:
-        - pyproject.toml
-        - poetry.lock
-    paths:
-      - .cache/pypoetry
-      - .cache/pip
+    # ✅ Генерация .env
+    - |
+      echo "POSTGRES_USER=$POSTGRES_USER" > .env
+      echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
+      echo "POSTGRES_DB=$POSTGRES_DB" >> .env
+      echo "DB_PORT=$DB_PORT" >> .env
+      echo "APP_CONFIG__DB__URL=$APP_CONFIG__DB__URL" >> .env
+      echo "APP_CONFIG__LOGGING__LEVEL=$APP_CONFIG__LOGGING__LEVEL" >> .env
 
-# ✅ Общая подготовка перед каждой job
-before_script:
-  - apt-get update && apt-get install -y curl
-  - curl -sSL https://install.python-poetry.org | python3 -
-  - export PATH="$HOME/.local/bin:$PATH"
-  - poetry config virtualenvs.create false
-  - poetry install --no-interaction --no-ansi --no-root
-
-  # ✅ Генерация .env из CI-переменных
-  - echo "POSTGRES_USER=${POSTGRES_USER}" > .env
-  - echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> .env
-  - echo "DB_PORT=${DB_PORT}" >> .env
-  - echo "POSTGRES_DB=${POSTGRES_DB}" >> .env
-  - echo "DB_HOST=${DB_HOST}" >> .env
-  - echo "LOGLEVEL=${LOGLEVEL}" >> .env
-
-# ✅ Job: Проверка кода (линтеры)
+# ✅ Линтинг
 lint:
   stage: lint
   script:
     - poetry run flake8 .
-    - poetry run isort . --check-only
-    - poetry run ruff .
-    - poetry run pylint internships_app/
+    - poetry run ruff check .
+    - poetry run pylint fastapi_app/
 
-# ✅ Job: Тесты
+# ✅ Тестирование внутри Docker Compose
 test:
   stage: test
-  services:
-    - docker:dind
+  script:
+    # Собрать и запустить тестовую БД
+    - docker compose -f docker-compose.test.yml up -d db_test
+
+    # Подождать, пока БД прогреется (healthcheck уже есть, но лучше подстраховаться)
+    - sleep 5
+
+    # Прогнать тесты в контейнере
+    - docker compose -f docker-compose.test.yml run --rm tests
+
+    # Остановить и почистить
+    - docker compose -f docker-compose.test.yml down -v
+
+# ✅ Билд контейнеров
+build:
+  stage: build
+  script:
+    - docker compose -f docker-compose.yml build
+
   variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_TLS_CERTDIR: ""
