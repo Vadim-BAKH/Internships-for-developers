@@ -31,6 +31,12 @@ class DatabaseConfig(BaseModel):
     }
 
 
+class DBTestConfig(BaseModel):
+    """Модель тестового url."""
+
+    uri: str = "postgresql+asyncpg://test:test@test_db:5433/test_db"
+
+
 class LoggingConfig(BaseModel):
     """Модель pydantic логирования."""
 
@@ -55,6 +61,7 @@ class Settings(BaseSettings):
     db: DatabaseConfig
     logging: LoggingConfig = LoggingConfig()
     app: AppConfig = AppConfig()
+    url_test: DBTestConfig = DBTestConfig()
 
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
