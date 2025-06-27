@@ -25,7 +25,7 @@ default:
     - poetry config virtualenvs.create false
     - poetry install --no-interaction --no-ansi --no-root
 
-    # ✅ Генерация .env
+    # ✅ Генерация .env из CI переменных
     - |
       echo "POSTGRES_USER=$POSTGRES_USER" > .env
       echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
@@ -34,41 +34,42 @@ default:
       echo "APP_CONFIG__DB__URL=$APP_CONFIG__DB__URL" >> .env
       echo "APP_CONFIG__LOGGING__LEVEL=$APP_CONFIG__LOGGING__LEVEL" >> .env
 
-# ✅ Линтинг
 lint:
   stage: lint
+  tags:
+    - saas-postgres-production
+    - sld-postgres-production
+    - spp
   script:
     - poetry run flake8 .
     - poetry run ruff check .
     - poetry run pylint fastapi_app/
 
-# ✅ Тестирование внутри Docker Compose
 test:
   stage: test
-  script:
-    # Собрать и запустить тестовую БД
-    - docker compose -f docker-compose.test.yml up -d db_test
-
-    # Подождать, пока БД прогреется (healthcheck уже есть, но лучше подстраховаться)
-    - sleep 5
-
-    # Прогнать тесты в контейнере
-    - docker compose -f docker-compose.test.yml run --rm tests
-
-    # Остановить и почистить
-    - docker compose -f docker-compose.test.yml down -v
-
-# ✅ Билд контейнеров
-build:
-  stage: build
-  script:
-    - docker compose -f docker-compose.yml build
-
+  tags:
+    - saas-postgres-production
+    - sld-postgres-production
+    - spp
   variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_TLS_CERTDIR: ""
-
   script:
-    - docker compose up --build -d
-    - poetry run pytest
+    - docker compose -f docker-compose.test.yml up -d db_test
+    - sleep 5
+    - docker compose -f docker-compose.test.yml run --rm tests
+    - docker compose -f docker-compose.test.yml down -v
+
+build:
+  stage: build
+  tags:
+    - saas-postgres-production
+    - sld-postgres-production
+    - spp
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker compose -f docker-compose.yml build
+    - docker compose up -d
     - docker compose down -v
