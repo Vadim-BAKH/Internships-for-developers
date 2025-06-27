@@ -1,12 +1,18 @@
 """Базовая модель."""
 
+from sqlalchemy import MetaData
 from sqlalchemy.orm import DeclarativeBase, declared_attr
 
+from fastapi_app.configs import settings
 from fastapi_app.utils import camel_case_to_snake_case
 
 
 class Base(DeclarativeBase):
     """Базовый класс для декларативных моделей SQLAlchemy."""
+
+    metadata = MetaData(
+        naming_convention=settings.db.naming_convention,
+    )
 
 
 class BaseModel(Base):
