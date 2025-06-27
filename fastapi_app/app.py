@@ -7,7 +7,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse
 
+from fastapi_app.configs import settings
 from fastapi_app.database import async_engine
+from fastapi_app.routers import user_rout
 
 
 @asynccontextmanager
@@ -42,4 +44,7 @@ app_.add_middleware(
     expose_headers=["Content-Type", "X-Custom-Header"],
 )
 
-# app_.include_router(dish_router, prefix="/api")
+app_.include_router(
+    user_rout,
+    prefix=f"{settings.app.api_prefix}",
+)
