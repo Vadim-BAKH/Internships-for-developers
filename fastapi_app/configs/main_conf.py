@@ -43,11 +43,18 @@ class LoggingConfig(BaseModel):
         return logging.getLevelNamesMapping()[self.level.upper()]
 
 
+class AppConfig(BaseModel):
+    """Конфигурация приложения."""
+
+    api_prefix: str = "/api"
+
+
 class Settings(BaseSettings):
     """Базовый конфигуратор приложения."""
 
     db: DatabaseConfig
     logging: LoggingConfig = LoggingConfig()
+    app: AppConfig = AppConfig()
 
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
