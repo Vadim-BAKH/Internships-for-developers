@@ -9,9 +9,11 @@ RUN apt-get update && apt-get install -y libpq-dev gcc curl && rm -rf /var/lib/a
 RUN pip install --upgrade pip
 ENV PATH="/root/.local/bin:$PATH"
 
-RUN curl -sSL https://install.python-poetry.org | python3 - && \
-    poetry config virtualenvs.create false && \
-    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
+RUN curl -sSL https://install.python-poetry.org -o install-poetry.py && \
+    python3 install-poetry.py && \
+    ln -s /root/.local/bin/poetry /usr/local/bin/poetry && \
+    poetry config virtualenvs.create false
+
 
 COPY pyproject.toml poetry.lock README.md ./
 
