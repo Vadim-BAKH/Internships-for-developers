@@ -1,42 +1,45 @@
 """Создание пользователя."""
 
 import pytest
-from pydantic import EmailStr
-
-from fastapi_app.crud import create_user
-from fastapi_app.exceptions import EmailExists, UsernameExists
-from fastapi_app.schemas import UserCreate
+from fastapi import status
 
 
 @pytest.mark.asyncio
 @pytest.mark.user
 async def test_create_user(
-    db_session,
+    client,
 ):
     """Тестируем создание пользователя."""
-    username: str = "Тестовое имя"
-    email: EmailStr = "test@mail.ru"
+    user_payload = {
+        "username": "uniqueuser",
+        "email": "unique@mail.ru",
+    }
 
-    user_data = UserCreate(
-        username=username,
-        email=email,
+    # Первый запрос — успешное создание
+    response = await client.post(
+        "/api/users/",
+        json=user_payload,
     )
+    assert response.status_code == status.HTTP_201_CREATED
 
-    # Создаём пользователя
-    created_user = await create_user(
-        session=db_session,
-        data=user_data,
+    # Второй запрос с тем же email — должен вернуть ошибку
+    response_email = await client.post(
+        "/api/users/",
+        json={
+            "username": "anotheruser",
+            "email": user_payload["email"],
+        },
     )
+    assert response_email.status_code == status.HTTP_400_BAD_REQUEST
+    assert "email" in response_email.json().get("detail", "").lower()
 
-    assert created_user.username == username
-    assert created_user.email == email
-    assert created_user.id is not None
-
-    with pytest.raises(UsernameExists):
-        await create_user(session=db_session, data=user_data)
-
-    with pytest.raises(EmailExists):
-        await create_user(
-            session=db_session,
-            data=UserCreate(username="другое_имя", email=email),
-        )
+    # Третий запрос с тем же username — тоже ошибка
+    response_username = await client.post(
+        "/api/users/",
+        json={
+            "username": user_payload["username"],
+            "email": "another@mail.ru",
+        },
+    )
+    assert response_username.status_code == status.HTTP_400_BAD_REQUEST
+    assert "username" in response_username.json().get("detail", "").lower()

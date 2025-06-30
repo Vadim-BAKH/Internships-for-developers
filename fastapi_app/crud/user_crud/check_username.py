@@ -1,11 +1,10 @@
 """Проверка уникальности username."""
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from fastapi_app.configs import logger
 from fastapi_app.exceptions import UsernameExists
 from fastapi_app.models import User
+from sqlalchemy import exists, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def check_name(
@@ -18,7 +17,7 @@ async def check_name(
     Поднимает исключение, если уже существует имя.
     """
     existing_user = await session.scalar(
-        select(User).where(User.username == username)
+        select(exists().where(User.username == username))
     )
     if existing_user:
         logger.info("User with username '{}' already exists.", username)

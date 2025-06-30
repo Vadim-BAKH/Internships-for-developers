@@ -1,12 +1,11 @@
 """Создаёт пользователя."""
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from fastapi_app.configs import logger
 from fastapi_app.crud.user_crud.check_email import check_email
 from fastapi_app.crud.user_crud.check_username import check_name
 from fastapi_app.models import User
 from fastapi_app.schemas import UserCreate, UserRead
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def create_user(

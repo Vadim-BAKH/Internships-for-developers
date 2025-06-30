@@ -1,12 +1,11 @@
 """Проверка уникальности email."""
 
-from pydantic import EmailStr
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from fastapi_app.configs import logger
 from fastapi_app.exceptions import EmailExists
 from fastapi_app.models import User
+from pydantic import EmailStr
+from sqlalchemy import exists, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def check_email(
@@ -19,7 +18,7 @@ async def check_email(
     Поднимает исключение, если уже существует адрес.
     """
     existing_user = await session.scalar(
-        select(User).where(User.email == email)
+        select(exists().where(User.email == email))
     )
     if existing_user:
         logger.info("User with email '{}' already exists.", email)
