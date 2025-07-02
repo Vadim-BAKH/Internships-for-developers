@@ -39,10 +39,10 @@
 
 Перед push ветки в удалённый репозиторий необходимо выполнить: 
      
-               **git switch main**
-               **git pull origin main**
-               **git switch development/ваше имя**   (возвращаетесь на свою локальную ветку)
-               **git push origin development/ваше имя**
+                   git switch main
+                   git pull origin main
+                   git switch development/ваше имя   (возвращаетесь на свою локальную ветку)
+                   git push origin development/ваше имя
 
 Во-избежание гонки веток необходимо, извещать коллег о своих действиях.
 
@@ -51,11 +51,11 @@
 
 Миграции осуществляются при запущенном контейнере:
 
-               **docker compose exec app alembic revision --autogenerate -m "ваш init"**
+                   docker compose exec app alembic revision --autogenerate -m "ваш init"
 
 После проверки файла миграций:
 
-               **docker compose exec app alembic upgrade head**
+                   docker compose exec app alembic upgrade head
 
 
 ### Тесты
@@ -64,14 +64,14 @@
 
 Команда для запуска тестовой БД:
 
-               **docker compose -f docker-compose.test.yml up -d db_test**
+                   docker compose -f docker-compose.test.yml up -d db_test
 
 Команда для запуска тестов:
 
-               **docker compose -f docker-compose.test.yml run --rm tests**
+                   docker compose -f docker-compose.test.yml run --rm tests
 
 Завершить работу с тестовой БД:
 
-               **docker compose -f docker-compose.test.yml down**
+                   docker compose -f docker-compose.test.yml down
 
 
