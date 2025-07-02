@@ -1,10 +1,11 @@
 """Проверка уникальности username."""
 
+from sqlalchemy import exists, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from fastapi_app.configs import logger
 from fastapi_app.exceptions import UsernameExists
 from fastapi_app.models import User
-from sqlalchemy import exists, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def check_name(
