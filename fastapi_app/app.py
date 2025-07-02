@@ -9,6 +9,7 @@ from fastapi.responses import ORJSONResponse
 
 from fastapi_app.configs import settings
 from fastapi_app.database import async_engine
+from fastapi_app.exceptions import register_exception_handler
 from fastapi_app.routers import user_rout
 
 
@@ -28,6 +29,8 @@ app_ = FastAPI(
     lifespan=database_life_cycle,
     default_response_class=ORJSONResponse,
 )
+
+register_exception_handler(app_)
 
 origins = [
     "http://localhost",
