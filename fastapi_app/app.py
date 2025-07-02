@@ -49,5 +49,5 @@ app_.add_middleware(
 
 app_.include_router(
     user_rout,
-    prefix=f"{settings.app.api_prefix}",
+    prefix=f"{settings.app.api_prefix}{settings.app.v1.prefix}",
 )

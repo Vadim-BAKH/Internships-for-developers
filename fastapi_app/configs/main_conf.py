@@ -49,10 +49,17 @@ class LoggingConfig(BaseModel):
         return logging.getLevelNamesMapping()[self.level.upper()]
 
 
+class ApiV1Prefix(BaseModel):
+    """Конфигурации версии v1."""
+
+    prefix: str = "/v1"
+
+
 class AppConfig(BaseModel):
     """Конфигурация приложения."""
 
     api_prefix: str = "/api"
+    v1: ApiV1Prefix = ApiV1Prefix()
 
 
 class Settings(BaseSettings):
