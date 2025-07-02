@@ -1,11 +1,12 @@
 """Проверка уникальности email."""
 
-from fastapi_app.configs import logger
-from fastapi_app.exceptions import EmailExists
-from fastapi_app.models import User
 from pydantic import EmailStr
 from sqlalchemy import exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from fastapi_app.configs import logger
+from fastapi_app.exceptions import EmailExists
+from fastapi_app.models import User
 
 
 async def check_email(
