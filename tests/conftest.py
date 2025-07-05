@@ -7,8 +7,11 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi_app.app import app_
-from fastapi_app.database import (async_test_engine, async_test_session,
-                                  get_session_db)
+from fastapi_app.database import (
+    async_test_engine,
+    async_test_session,
+    get_session_db,
+)
 from fastapi_app.models import Base
 
 
@@ -61,3 +64,31 @@ async def client():
         base_url="http://test",
     ) as ac:
         yield ac
+
+
+@pytest.fixture
+def create_user(client: AsyncClient):
+    """Фикстура для создания тестового пользователя через API."""
+
+    async def _create_user(
+        username: str = "testuser",
+        email: str = "testuser@example.com",
+        password: str = "strongpassword123",
+    ):
+        payload = {
+            "username": username,
+            "email": email,
+            "password": password,
+            "password_confirm": password,
+        }
+
+        response = await client.post(
+            "/api/v1/users/",
+            json=payload,
+        )
+        assert (
+            response.status_code == 201
+        ), f"Failed to create user: {response.text}"
+        return payload
+
+    return _create_user
