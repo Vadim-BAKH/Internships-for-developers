@@ -38,6 +38,7 @@ services:
     volumes:
       - ./alembic.ini:/app/alembic.ini
       - ./migrations:/app/migrations
+      - ./certs:/app/certs
 
 volumes:
   postgres_data:
