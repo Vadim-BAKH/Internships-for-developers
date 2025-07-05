@@ -7,7 +7,7 @@ from fastapi_app.exceptions.bad_request import (
 )
 from fastapi_app.exceptions.forbidden import UserInActive
 from fastapi_app.exceptions.general_errors import register_exception_handler
-from fastapi_app.exceptions.unauthorizes import InvalidToken, UserUnauthorized
+from fastapi_app.exceptions.unauthorized import InvalidToken, UserUnauthorized
 
 __all__ = [
     "UsernameExists",
