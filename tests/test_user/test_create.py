@@ -6,40 +6,56 @@ from fastapi import status
 
 @pytest.mark.asyncio
 @pytest.mark.user
-async def test_create_user(
-    client,
-):
-    """Тестируем создание пользователя."""
-    user_payload = {
+async def test_create_user(client):
+    """Тест создания нового пользователя и проверка дубликатов."""
+    payload = {
         "username": "uniqueuser",
         "email": "unique@mail.ru",
+        "password": "password123",
+        "password_confirm": "password123",
     }
 
-    # Первый запрос — успешное создание
     response = await client.post(
-        "/api/users/",
-        json=user_payload,
+        "/api/v1/users/",
+        json=payload,
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    # Второй запрос с тем же email — должен вернуть ошибку
-    response_email = await client.post(
-        "/api/users/",
+    # Повторный email
+    response = await client.post(
+        "/api/v1/users/",
         json={
-            "username": "anotheruser",
-            "email": user_payload["email"],
+            "username": "newuser",
+            "email": payload["email"],
+            "password": "password123",
+            "password_confirm": "password123",
         },
     )
-    assert response_email.status_code == status.HTTP_400_BAD_REQUEST
-    assert "email" in response_email.json().get("detail", "").lower()
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "email" in response.json()["detail"].lower()
 
-    # Третий запрос с тем же username — тоже ошибка
-    response_username = await client.post(
-        "/api/users/",
+    # Повторный username
+    response = await client.post(
+        "/api/v1/users/",
         json={
-            "username": user_payload["username"],
-            "email": "another@mail.ru",
+            "username": payload["username"],
+            "email": "new@mail.ru",
+            "password": "password123",
+            "password_confirm": "password123",
         },
     )
-    assert response_username.status_code == status.HTTP_400_BAD_REQUEST
-    assert "username" in response_username.json().get("detail", "").lower()
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "username" in response.json()["detail"].lower()
+
+    # password_confirm не совпал с password
+    response = await client.post(
+        "/api/v1/users/",
+        json={
+            "username": "new_username",
+            "email": "new@mail.ru",
+            "password": "password123",
+            "password_confirm": "password12345",
+        },
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json()["detail"] == "Passwords do not match"

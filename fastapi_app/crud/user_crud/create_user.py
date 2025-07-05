@@ -1,7 +1,8 @@
-"""Создаёт пользователя."""
+"""Создаёт нового пользователя."""
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from fastapi_app.authentication import hash_password
 from fastapi_app.configs import logger
 from fastapi_app.crud.user_crud.check_email import check_email
 from fastapi_app.crud.user_crud.check_username import check_name
@@ -14,8 +15,14 @@ async def create_user(
     data: UserCreate,
 ) -> UserRead:
     """Создаёт пользователя с уникальным username и email."""
-    logger.debug("Creating username: {}", data.username)
-    logger.debug("Creating email: {}", data.email)
+    logger.debug(
+        "Creating username: '{}'",
+        data.username,
+    )
+    logger.debug(
+        "Creating email: '{}'",
+        data.email,
+    )
 
     await check_name(
         session=session,
@@ -25,11 +32,20 @@ async def create_user(
         session=session,
         email=data.email,
     )
-
-    new_user = User(**data.model_dump())
+    hashed_password = hash_password(
+        data.password.get_secret_value(),
+    )
+    new_user = User(
+        username=data.username,
+        email=data.email,
+        password=hashed_password,
+    )
     session.add(new_user)
     await session.commit()
     await session.refresh(new_user)
 
-    logger.info("User created successfully: {}", new_user.username)
+    logger.info(
+        "User created successfully: '{}'",
+        new_user.username,
+    )
     return UserRead.model_validate(new_user)

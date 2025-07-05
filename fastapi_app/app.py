@@ -10,7 +10,7 @@ from fastapi.responses import ORJSONResponse
 from fastapi_app.configs import settings
 from fastapi_app.database import async_engine
 from fastapi_app.exceptions import register_exception_handler
-from fastapi_app.routers import user_rout
+from fastapi_app.routers import auth_rout, user_rout
 
 
 @asynccontextmanager
@@ -47,7 +47,7 @@ app_.add_middleware(
     expose_headers=["Content-Type", "X-Custom-Header"],
 )
 
-app_.include_router(
-    user_rout,
-    prefix=f"{settings.app.api_prefix}{settings.app.v1.prefix}",
-)
+API_PREFIX_V1 = f"{settings.app.api_prefix}{settings.app.v1.prefix}"
+
+app_.include_router(user_rout, prefix=API_PREFIX_V1)
+app_.include_router(auth_rout, prefix=API_PREFIX_V1)

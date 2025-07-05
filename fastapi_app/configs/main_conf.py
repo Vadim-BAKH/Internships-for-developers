@@ -1,10 +1,14 @@
 """Главный конфигуратор сервисов."""
 
 import logging
+from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+CERTS_DIR = Path("/app/certs")
+
 
 LOGURU_FORMAT = (
     "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "
@@ -49,6 +53,15 @@ class LoggingConfig(BaseModel):
         return logging.getLevelNamesMapping()[self.level.upper()]
 
 
+class AuthJWT(BaseModel):
+    """Модель JWT ключа."""
+
+    private_key_path: Path = CERTS_DIR / "jwt-private.pem"
+    public_key_path: Path = CERTS_DIR / "jwt-public.pem"
+    algorithm: str = "RS256"
+    access_token_expire_minutes: int = 15
+
+
 class ApiV1Prefix(BaseModel):
     """Конфигурации версии v1."""
 
@@ -69,6 +82,7 @@ class Settings(BaseSettings):
     logging: LoggingConfig = LoggingConfig()
     app: AppConfig = AppConfig()
     url_test: DBTestConfig = DBTestConfig()
+    auth_jwt: AuthJWT = AuthJWT()
 
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),

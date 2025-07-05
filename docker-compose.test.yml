@@ -26,7 +26,7 @@ services:
     volumes:
       - ./tests:/app/tests
       - ./fastapi_app:/app/fastapi_app
-
+      - ./certs:/app/certs
     environment:
       APP_CONFIG__DB__URL: postgresql+asyncpg://test:test@db_test:5432/test_db
       APP_CONFIG__URL_TEST__URI: postgresql+asyncpg://test:test@db_test:5432/test_db

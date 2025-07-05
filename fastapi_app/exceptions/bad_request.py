@@ -10,7 +10,7 @@ class UsernameExists(HTTPException):
     def __init__(self, username: str):
         super().__init__(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Username '{username}' already exists",
+            detail="Username already exists",
         )
 
 
@@ -20,5 +20,15 @@ class EmailExists(HTTPException):
     def __init__(self, email: EmailStr):
         super().__init__(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Email '{email}' already exists",
+            detail="Email already exists",
+        )
+
+
+class PasswordsDoNotMatch(HTTPException):
+    """Исключение при несовпадении паролей."""
+
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Passwords do not match",
         )
