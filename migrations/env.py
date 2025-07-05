@@ -7,10 +7,13 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from fastapi_app.configs import logger, settings
-from fastapi_app.models import BaseModel  # noqa
-from fastapi_app.models import IntIdPkMixin  # noqa
-from fastapi_app.models import User  # noqa
-from fastapi_app.models import Base
+from fastapi_app.models import (
+    ActiveMixin,  # noqa
+    Base,
+    BaseModel,  # noqa
+    IntIdPkMixin,  # noqa
+    User,  # noqa
+)
 
 config = context.config
 
