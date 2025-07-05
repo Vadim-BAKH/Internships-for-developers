@@ -41,9 +41,7 @@ lint:
     - sld-postgres-production
     - spp
   script:
-    - poetry run flake8 .
     - poetry run ruff check .
-    - poetry run pylint fastapi_app/
 
 test:
   stage: test
