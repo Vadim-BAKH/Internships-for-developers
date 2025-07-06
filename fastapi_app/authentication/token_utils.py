@@ -1,12 +1,12 @@
 """Утилиты для проверки токена."""
 
 from fastapi_app.authentication.create_token import (
-    TOKEN_TYPE_FIELD,
     ACCESS_TOKEN_TYPE,
     REFRESH_TOKEN_TYPE,
+    TOKEN_TYPE_FIELD,
 )
-from fastapi_app.exceptions import NotAccessTokenType, NotRefreshTokenType
 from fastapi_app.configs import logger
+from fastapi_app.exceptions import NotAccessTokenType, NotRefreshTokenType
 
 
 def ensure_access_token_type(payload: dict) -> None:

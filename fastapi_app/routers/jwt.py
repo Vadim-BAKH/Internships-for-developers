@@ -4,18 +4,17 @@ from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPBearer
 
 from fastapi_app.authentication import (
-    validate_auth_user,
     create_access_token,
     create_refresh_token,
+    validate_auth_user,
 )
 from fastapi_app.authentication.auth_user import (
     get_active_auth_user,
     get_current_refresh_user,
 )
+from fastapi_app.configs import settings
 from fastapi_app.models import User
 from fastapi_app.schemas import TokenInfo, UserAuthSchema
-from fastapi_app.configs import settings
-
 
 http_bearer = HTTPBearer(auto_error=False)
 

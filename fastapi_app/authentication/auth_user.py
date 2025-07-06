@@ -9,10 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi_app.authentication.jwt_utils import decode_jwt
 from fastapi_app.authentication.token_utils import (
-    ensure_refresh_token_type,
     ensure_access_token_type,
+    ensure_refresh_token_type,
 )
-
+from fastapi_app.configs import logger
 from fastapi_app.crud.user_crud.get_auth_user import get_user_by_username
 from fastapi_app.database import get_session_db
 from fastapi_app.exceptions import (
@@ -20,8 +20,6 @@ from fastapi_app.exceptions import (
     UserInActive,
 )
 from fastapi_app.models import User
-from fastapi_app.configs import logger
-
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="api/v1/jwt/login/",

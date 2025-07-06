@@ -1,7 +1,7 @@
 """Обновление access-токена через refresh-токен."""
 
-from fastapi import status
 import pytest
+from fastapi import status
 from httpx import AsyncClient
 
 
