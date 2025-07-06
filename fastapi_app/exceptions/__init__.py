@@ -7,7 +7,12 @@ from fastapi_app.exceptions.bad_request import (
 )
 from fastapi_app.exceptions.forbidden import UserInActive
 from fastapi_app.exceptions.general_errors import register_exception_handler
-from fastapi_app.exceptions.unauthorized import InvalidToken, UserUnauthorized
+from fastapi_app.exceptions.unauthorized import (
+    InvalidToken,
+    UserUnauthorized,
+    NotAccessTokenType,
+    NotRefreshTokenType,
+)
 
 __all__ = [
     "UsernameExists",
@@ -17,4 +22,6 @@ __all__ = [
     "PasswordsDoNotMatch",
     "UserInActive",
     "InvalidToken",
+    "NotAccessTokenType",
+    "NotRefreshTokenType",
 ]
