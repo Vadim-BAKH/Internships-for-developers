@@ -1,5 +1,10 @@
 """Инициализация хеширования паролей."""
 
+from fastapi_app.authentication.create_token import (
+    TOKEN_TYPE_FIELD,
+    create_access_token,
+    create_refresh_token,
+)
 from fastapi_app.authentication.jwt_utils import (
     decode_jwt,
     encode_jwt,
@@ -14,4 +19,7 @@ __all__ = [
     "validate_password",
     "hash_password",
     "validate_auth_user",
+    "create_access_token",
+    "create_refresh_token",
+    "TOKEN_TYPE_FIELD",
 ]

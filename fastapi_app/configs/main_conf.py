@@ -60,6 +60,7 @@ class AuthJWT(BaseModel):
     public_key_path: Path = CERTS_DIR / "jwt-public.pem"
     algorithm: str = "RS256"
     access_token_expire_minutes: int = 15
+    refresh_token_expire_days: int = 30
 
 
 class ApiV1Prefix(BaseModel):

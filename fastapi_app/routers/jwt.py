@@ -1,13 +1,28 @@
 """Маршруты для авторизации пользователя через JWT-токен."""
 
 from fastapi import APIRouter, Depends, status
+from fastapi.security import HTTPBearer
 
-from fastapi_app.authentication import encode_jwt, validate_auth_user
-from fastapi_app.authentication.auth_user import get_active_auth_user
+from fastapi_app.authentication import (
+    create_access_token,
+    create_refresh_token,
+    validate_auth_user,
+)
+from fastapi_app.authentication.auth_user import (
+    get_active_auth_user,
+    get_current_refresh_user,
+)
+from fastapi_app.configs import settings
 from fastapi_app.models import User
 from fastapi_app.schemas import TokenInfo, UserAuthSchema
 
-router = APIRouter(prefix="/jwt", tags=["YWT"])
+http_bearer = HTTPBearer(auto_error=False)
+
+router = APIRouter(
+    prefix="/jwt",
+    tags=["YWT"],
+    dependencies=[Depends(http_bearer)],
+)
 
 
 @router.post(
@@ -21,17 +36,36 @@ async def auth_user_issue_jwt(
     """
     Авторизация пользователя и выдача JWT-токена.
 
-    Проверяет логин и пароль, генерирует access token.
+    Проверяет логин и пароль, генерирует:
+           - access_token;
+           - refresh_token.
     """
-    jwt_payload = {
-        "sub": user.username,
-        "email": user.email,
-    }
-    token = encode_jwt(jwt_payload)
+
+    access_token = create_access_token(user=user)
+    refresh_token = create_refresh_token(user=user)
 
     return TokenInfo(
-        access_token=token,
+        access_token=access_token,
+        refresh_token=refresh_token,
         token_type="Bearer",
+        expires_in=settings.auth_jwt.access_token_expire_minutes * 60,
+    )
+
+
+@router.post(
+    "/refresh/",
+    response_model=TokenInfo,
+    response_model_exclude_none=True,
+)
+async def auth_refresh_jwt(
+    user: User = Depends(get_current_refresh_user),
+) -> TokenInfo:
+    """Обновляет access-токен по refresh-токену."""
+    access_token = create_access_token(user=user)
+    return TokenInfo(
+        access_token=access_token,
+        token_type="Bearer",
+        expires_in=settings.auth_jwt.access_token_expire_minutes * 60,
     )
 
 
