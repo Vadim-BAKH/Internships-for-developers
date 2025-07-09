@@ -1,11 +1,13 @@
 """Создаёт нового пользователя."""
 
+from fastapi import BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi_app.authentication import hash_password
 from fastapi_app.configs import logger
 from fastapi_app.crud.user_crud.check_email import check_email
 from fastapi_app.crud.user_crud.check_username import check_name
+from fastapi_app.mailing import send_welcome_email
 from fastapi_app.models import User
 from fastapi_app.schemas import UserCreate, UserRead
 
@@ -13,8 +15,13 @@ from fastapi_app.schemas import UserCreate, UserRead
 async def create_user(
     session: AsyncSession,
     data: UserCreate,
+    background_tasks: BackgroundTasks,
 ) -> UserRead:
-    """Создаёт пользователя с уникальным username и email."""
+    """
+    Создаёт пользователя с уникальным username и email.
+
+    Отправляет фоновый send_welcome_email.
+    """
     logger.debug(
         "Creating username: '{}'",
         data.username,
@@ -43,6 +50,8 @@ async def create_user(
     session.add(new_user)
     await session.commit()
     await session.refresh(new_user)
+
+    background_tasks.add_task(send_welcome_email, user_id=new_user.id)
 
     logger.info(
         "User created successfully: '{}'",

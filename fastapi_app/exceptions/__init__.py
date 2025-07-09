@@ -7,6 +7,7 @@ from fastapi_app.exceptions.bad_request import (
 )
 from fastapi_app.exceptions.forbidden import UserInActive
 from fastapi_app.exceptions.general_errors import register_exception_handler
+from fastapi_app.exceptions.not_found import NoUserByThisId
 from fastapi_app.exceptions.unauthorized import (
     InvalidToken,
     NotAccessTokenType,
@@ -24,4 +25,5 @@ __all__ = [
     "InvalidToken",
     "NotAccessTokenType",
     "NotRefreshTokenType",
+    "NoUserByThisId",
 ]

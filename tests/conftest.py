@@ -66,6 +66,11 @@ async def client():
         yield ac
 
 
+from unittest.mock import AsyncMock, patch
+
+import pytest
+
+
 @pytest.fixture
 def create_user(client: AsyncClient):
     """Фикстура для создания тестового пользователя через API."""
@@ -82,13 +87,29 @@ def create_user(client: AsyncClient):
             "password_confirm": password,
         }
 
-        response = await client.post(
-            "/api/v1/users/",
-            json=payload,
-        )
+        # Мокаем функцию, не используя сам мок
+        with patch(
+            "fastapi_app.mailing.send_welcome_email",
+            new_callable=AsyncMock,
+        ):
+            response = await client.post(
+                "/api/v1/users/",
+                json=payload,
+            )
+
         assert (
             response.status_code == 201
         ), f"Failed to create user: {response.text}"
         return payload
 
     return _create_user
+
+
+@pytest.fixture(autouse=True)
+def mock_send_welcome_email():
+    """Автоматически мокаем отправку письма."""
+    with patch(
+        "fastapi_app.crud.user_crud.create_user.send_welcome_email",
+        new_callable=AsyncMock,
+    ):
+        yield
