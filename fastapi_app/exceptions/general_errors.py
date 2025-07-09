@@ -1,5 +1,6 @@
 """Регистрация исключений."""
 
+from aiosmtplib.errors import SMTPConnectError
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import ORJSONResponse
@@ -80,6 +81,20 @@ def register_exception_handler(app: FastAPI) -> None:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
                 "detail": "An unexpected database error has occurred",
+            },
+        )
+
+    @app.exception_handler(SMTPConnectError)
+    async def handle_smtp_connect_error(
+        request: Request,
+        exc: SMTPConnectError,
+    ) -> ORJSONResponse:
+        """Обработка ошибки подключения к SMTP серверу."""
+        logger.error("SMTP connection failed", exc_info=exc)
+        return ORJSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={
+                "detail": "Unable to connect to mail server. Try again later.",
             },
         )
 
