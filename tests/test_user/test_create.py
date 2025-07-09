@@ -6,7 +6,9 @@ from fastapi import status
 
 @pytest.mark.asyncio
 @pytest.mark.user
-async def test_create_user(client):
+async def test_create_user(
+    client,
+):
     """Тест создания нового пользователя и проверка дубликатов."""
     payload = {
         "username": "uniqueuser",
