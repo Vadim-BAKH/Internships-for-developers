@@ -2,12 +2,14 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, Depends, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from fastapi_app.crud import create_user
 from fastapi_app.database import get_session_db
 from fastapi_app.schemas import UserCreate, UserRead
+from fastapi_app.services import (
+    create_user_with_email as create,
+)
 
 router = APIRouter(
     prefix="/users",
@@ -28,16 +30,14 @@ SessionDep = Annotated[
 async def create_new_user(
     user_in: UserCreate,
     session: SessionDep,
-    background_tasks: BackgroundTasks,
 ):
     """
     Создаёт пользователя.
 
     Проверяет уникальность username и email.
-    Передаёт зависимость BackgroundTasks для отправки email.
+    Отправляет email с broker Taskiq.
     """
-    return await create_user(
+    return await create.create_user_with_welcome_email(
         session=session,
         data=user_in,
-        background_tasks=background_tasks,
     )
