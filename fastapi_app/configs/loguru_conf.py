@@ -10,7 +10,7 @@ logger.remove()
 logger.add(
     sink=sys.stdout,
     format=settings.logging.format,
-    level=settings.logging.level,
+    level=settings.logging.level_value,
     enqueue=True,
     backtrace=True,  # полезно в dev
     diagnose=True,  # показывает локальные переменные при ошибках

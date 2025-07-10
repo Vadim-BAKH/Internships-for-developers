@@ -17,11 +17,25 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
   app:
     container_name: app
     build:
       context: .
       dockerfile: Dockerfile
+    image: internships-backend:latest
     command: >
       /bin/bash -c "
       alembic upgrade head &&
@@ -31,6 +45,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      rabbitmq:
+        condition: service_started
     env_file:
       - .env
     ports:
@@ -40,8 +56,25 @@ services:
       - ./migrations:/app/migrations
       - ./certs:/app/certs
 
+  worker:
+    container_name: worker
+    image: internships-backend:latest
+    command: >
+      /bin/bash -c "
+      sleep 5 &&
+      taskiq worker fastapi_app.configs:broker --no-configure-logging --fs-discover --tasks-pattern "**/tasks"
+      "
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    env_file:
+      - .env
+    volumes:
+      - ./certs:/app/certs
+
   maildev:
     image: maildev/maildev
+    container_name: maildev
     environment:
       - TZ=Europe/Moscow
       - MAILDEV_WEB_PORT=1080
@@ -49,10 +82,7 @@ services:
     ports:
       - "8080:1080"
       - "1025:1025"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "1m"
 
 volumes:
   postgres_data:
+  rabbitmq-data:

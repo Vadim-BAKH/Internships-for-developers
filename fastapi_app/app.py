@@ -7,10 +7,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse
 
-from fastapi_app.configs import settings
+from fastapi_app.configs import (
+    broker,
+    settings,
+    validate_settings,
+)
 from fastapi_app.database import async_engine
 from fastapi_app.exceptions import register_exception_handler
 from fastapi_app.routers import auth_rout, user_rout
+
+validate_settings()
 
 
 @asynccontextmanager
@@ -20,9 +26,12 @@ async def database_life_cycle(app: FastAPI) -> AsyncIterator:
 
     Устанавливает и закрывает соединение.
     """
-
+    if not broker.is_worker_process:
+        await broker.startup()
     yield
     await async_engine.dispose()
+    if not broker.is_worker_process:
+        await broker.shutdown()
 
 
 app_ = FastAPI(

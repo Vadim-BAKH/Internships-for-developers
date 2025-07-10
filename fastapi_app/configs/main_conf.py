@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, PostgresDsn
+from pydantic import AmqpDsn, BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 CERTS_DIR = Path("/app/certs")
@@ -39,6 +39,12 @@ class DBTestConfig(BaseModel):
     """Модель тестового url."""
 
     uri: str = "postgresql+asyncpg://test:test@test_db:5433/test_db"
+
+
+class TaskiqConfig(BaseModel):
+    """Модель управления задачами taskiq."""
+
+    url: AmqpDsn
 
 
 class LoggingConfig(BaseModel):
@@ -84,6 +90,7 @@ class Settings(BaseSettings):
     app: AppConfig = AppConfig()
     url_test: DBTestConfig = DBTestConfig()
     auth_jwt: AuthJWT = AuthJWT()
+    taskiq: TaskiqConfig
 
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
