@@ -1,6 +1,7 @@
 """Конфигуратор тестов."""
 
 from typing import AsyncGenerator
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -66,11 +67,6 @@ async def client():
         yield ac
 
 
-from unittest.mock import AsyncMock, patch
-
-import pytest
-
-
 @pytest.fixture
 def create_user(client: AsyncClient):
     """Фикстура для создания тестового пользователя через API."""
@@ -87,15 +83,10 @@ def create_user(client: AsyncClient):
             "password_confirm": password,
         }
 
-        # Мокаем функцию, не используя сам мок
-        with patch(
-            "fastapi_app.mailing.send_welcome_email",
-            new_callable=AsyncMock,
-        ):
-            response = await client.post(
-                "/api/v1/users/",
-                json=payload,
-            )
+        response = await client.post(
+            "/api/v1/users/",
+            json=payload,
+        )
 
         assert (
             response.status_code == 201
@@ -107,9 +98,9 @@ def create_user(client: AsyncClient):
 
 @pytest.fixture(autouse=True)
 def mock_send_welcome_email():
-    """Автоматически мокаем отправку письма."""
+    """Автоматически мокаем отправку фоновой задачи."""
     with patch(
-        "fastapi_app.crud.user_crud.create_user.send_welcome_email",
+        "fastapi_app.tasks.send_welcome_email.kiq",
         new_callable=AsyncMock,
     ):
         yield
