@@ -39,6 +39,7 @@ pytest = "^8.4.1"
 pytest-asyncio = "^1.0.0"
 httpx = "^0.28.1"
 nano = "^0.10.0"
+pre-commit = "^4.2.0"
 
 [tool.black]
 line-length = 79
