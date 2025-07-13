@@ -1,3 +1,5 @@
+"""Сервис создаёт пользователя и отправляет письмо."""
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi_app.crud.user_crud.create_user import create_user
@@ -9,6 +11,7 @@ async def create_user_with_welcome_email(
     session: AsyncSession,
     data: UserCreate,
 ) -> UserRead:
+    """Вызывает создание пользователя и отправляет письмо."""
     user = await create_user(session, data)
     await send_welcome_email.kiq(user_id=user.id)
     return UserRead.model_validate(user)

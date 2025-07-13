@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 
 class ActiveMixin:
+
     """Миксин для мягкой деактивации (soft delete) через is_active."""
 
     is_active: Mapped[bool] = mapped_column(

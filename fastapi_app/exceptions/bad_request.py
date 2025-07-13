@@ -5,6 +5,7 @@ from pydantic import EmailStr
 
 
 class UsernameExists(HTTPException):
+
     """Модель исключения 'UsernameAlreadyExists'."""
 
     def __init__(self, username: str):
@@ -15,6 +16,7 @@ class UsernameExists(HTTPException):
 
 
 class EmailExists(HTTPException):
+
     """Модель исключения 'EmailAlreadyExists'."""
 
     def __init__(self, email: EmailStr):
@@ -25,6 +27,7 @@ class EmailExists(HTTPException):
 
 
 class PasswordsDoNotMatch(HTTPException):
+
     """Исключение при несовпадении паролей."""
 
     def __init__(self):

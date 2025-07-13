@@ -19,6 +19,7 @@ LOGURU_FORMAT = (
 
 
 class DatabaseConfig(BaseModel):
+
     """Модель pydantic базы данных."""
 
     url: PostgresDsn
@@ -36,18 +37,21 @@ class DatabaseConfig(BaseModel):
 
 
 class DBTestConfig(BaseModel):
+
     """Модель тестового url."""
 
     uri: str = "postgresql+asyncpg://test:test@test_db:5433/test_db"
 
 
 class TaskiqConfig(BaseModel):
+
     """Модель управления задачами taskiq."""
 
     url: AmqpDsn
 
 
 class LoggingConfig(BaseModel):
+
     """Модель pydantic логирования."""
 
     level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "DEBUG"
@@ -60,6 +64,7 @@ class LoggingConfig(BaseModel):
 
 
 class AuthJWT(BaseModel):
+
     """Модель JWT ключа."""
 
     private_key_path: Path = CERTS_DIR / "jwt-private.pem"
@@ -70,12 +75,14 @@ class AuthJWT(BaseModel):
 
 
 class ApiV1Prefix(BaseModel):
+
     """Конфигурации версии v1."""
 
     prefix: str = "/v1"
 
 
 class AppConfig(BaseModel):
+
     """Конфигурация приложения."""
 
     api_prefix: str = "/api"
@@ -83,6 +90,7 @@ class AppConfig(BaseModel):
 
 
 class Settings(BaseSettings):
+
     """Базовый конфигуратор приложения."""
 
     db: DatabaseConfig

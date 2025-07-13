@@ -1,0 +1,11 @@
+# Все Python-файлы всегда в LF
+*.py text eol=lf
+
+# Весь текст — LF (включая .env, .md, .yaml и т.п.)
+*.env text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.txt text eol=lf

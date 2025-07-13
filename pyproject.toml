@@ -41,16 +41,18 @@ httpx = "^0.28.1"
 nano = "^0.10.0"
 pre-commit = "^4.2.0"
 
-[tool.black]
-line-length = 79
-target-version = ["py312"]
-
 [tool.ruff]
 line-length = 79
 target-version = "py312"
 
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
 [tool.ruff.lint]
-extend-select = ["I"]
+select = ["E", "F", "I", "D"]
+ignore = ["D107", "D211", "D212", "E501"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

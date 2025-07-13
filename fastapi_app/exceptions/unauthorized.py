@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 
 
 class UserUnauthorized(HTTPException):
+
     """Модель исключения 'UserUnauthorized'."""
 
     def __init__(self):
@@ -14,7 +15,8 @@ class UserUnauthorized(HTTPException):
 
 
 class InvalidToken(HTTPException):
-    """Модель исключения InvalidToken"""
+
+    """Модель исключения InvalidToken."""
 
     def __init__(self):
         super().__init__(
@@ -24,7 +26,8 @@ class InvalidToken(HTTPException):
 
 
 class NotAccessTokenType(HTTPException):
-    """Модель исключения NotAccessTokenTipe"""
+
+    """Модель исключения NotAccessTokenTipe."""
 
     def __init__(self):
         super().__init__(
@@ -34,7 +37,8 @@ class NotAccessTokenType(HTTPException):
 
 
 class NotRefreshTokenType(HTTPException):
-    """Модель исключения NotRefreshTokenType"""
+
+    """Модель исключения NotRefreshTokenType."""
 
     def __init__(self):
         super().__init__(

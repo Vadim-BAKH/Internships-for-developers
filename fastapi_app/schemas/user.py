@@ -15,6 +15,7 @@ from fastapi_app.exceptions import PasswordsDoNotMatch
 
 
 class UserBase(BaseModel):
+
     """Базовая модель пользователя."""
 
     username: Annotated[str, MinLen(3), MaxLen(50)]
@@ -22,6 +23,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
+
     """Создание пользователя с паролем."""
 
     password: Annotated[SecretStr, MinLen(8)]
@@ -39,6 +41,7 @@ class UserCreate(UserBase):
 
 
 class UserRead(UserBase):
+
     """Ответ при получении пользователя."""
 
     model_config = ConfigDict(from_attributes=True)
@@ -46,6 +49,7 @@ class UserRead(UserBase):
 
 
 class UserAuthSchema(BaseModel):
+
     """Модель для авторизации (логина)."""
 
     model_config = ConfigDict(from_attributes=True)
@@ -55,6 +59,7 @@ class UserAuthSchema(BaseModel):
 
 
 class UserUpdateStatus(BaseModel):
+
     """Модель для обновления статуса пользователя."""
 
     username: str
