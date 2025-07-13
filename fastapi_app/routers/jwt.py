@@ -40,7 +40,6 @@ async def auth_user_issue_jwt(
            - access_token;
            - refresh_token.
     """
-
     access_token = create_access_token(user=user)
     refresh_token = create_refresh_token(user=user)
 

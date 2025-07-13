@@ -9,7 +9,8 @@ from fastapi_app.models.mixins.soft_delete import ActiveMixin
 
 
 class User(IntIdPkMixin, ActiveMixin, BaseModel):
-    """Таблица пользователя"""
+
+    """Таблица пользователя."""
 
     username: Mapped[str] = mapped_column(
         String(50),

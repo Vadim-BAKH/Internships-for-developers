@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 
 
 class UserInActive(HTTPException):
+
     """Модель исключения 'UserIsNotActive'."""
 
     def __init__(self):

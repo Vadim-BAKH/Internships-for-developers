@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 
 
 class NoUserByThisId(HTTPException):
+
     """Модель исключения 'NoUserByThisId'."""
 
     def __init__(self):

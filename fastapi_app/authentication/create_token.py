@@ -1,3 +1,5 @@
+"""Модель создания токенов."""
+
 from datetime import timedelta
 
 from fastapi_app.authentication.jwt_utils import encode_jwt
@@ -15,6 +17,7 @@ def create_jwt(
     expire_minutes: int = settings.auth_jwt.access_token_expire_minutes,
     expire_timedelta: timedelta | None = None,
 ) -> str:
+    """Создаёт токены."""
     jwt_payload = {TOKEN_TYPE_FIELD: token_type}
     jwt_payload.update(token_data)
     return encode_jwt(
@@ -25,6 +28,7 @@ def create_jwt(
 
 
 def create_access_token(user: User) -> str:
+    """Создаёт access_token."""
     jwt_payload = {
         "sub": user.username,
         "email": user.email,
@@ -37,13 +41,12 @@ def create_access_token(user: User) -> str:
 
 
 def create_refresh_token(user: User) -> str:
+    """Создаёт refresh_token."""
     jwt_payload = {
         "sub": user.username,
     }
     return create_jwt(
         token_type=REFRESH_TOKEN_TYPE,
         token_data=jwt_payload,
-        expire_timedelta=timedelta(
-            days=settings.auth_jwt.refresh_token_expire_days
-        ),
+        expire_timedelta=timedelta(days=settings.auth_jwt.refresh_token_expire_days),
     )

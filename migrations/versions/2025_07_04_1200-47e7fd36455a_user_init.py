@@ -1,9 +1,9 @@
-"""user init
+"""
+user init.
 
 Revision ID: 47e7fd36455a
 Revises:
 Create Date: 2025-07-04 12:00:40.485157
-
 """
 
 from typing import Sequence, Union
